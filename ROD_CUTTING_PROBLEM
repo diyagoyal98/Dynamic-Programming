@@ -1,0 +1,113 @@
+//ROD CUTTING (MAXIMUM PRICE)
+/*GIVEN A ROD OF LENGTH N .THE ROD CAN BE CUT NTO DIFFEREN SIZES AND EACH SIZE HAS A COST ASSOSISATED WITH IT . DETERMINE MAXIMUM COST OBTAINED BY CUTTING THE ROW*/
+
+
+
+#include<iostream>
+#include<vector>
+using namespace std;
+
+//RECURSIVE
+int fun(int idx,int n,vector<int>&price)
+{
+	if(idx==0)
+	{
+		return price[0]*n;
+	}
+	int nottake=0+fun(idx-1,n,price);
+	int take=INT_MIN;
+	int rod_length=idx+1;
+	if(rod_length<=n)
+	{
+		take=price[idx]+fun(idx,n-rod_length,price);
+	}
+	return max(take,nottake);
+}
+int cutRod(vector<int> &price, int n)
+{
+	return fun(price.size()-1,n,price);
+}
+
+
+//TABULATION
+int fun(int idx,int n,vector<vector<int>>&dp,vector<int>&price)
+{
+	if(idx==0)
+	{
+		return price[0]*n;
+	}
+	if(dp[idx][n]!=-1)
+	return dp[idx][n];
+	int nottake=0+fun(idx-1,n,dp,price);
+	int take=INT_MIN;
+	int rod_length=idx+1;
+	if(rod_length<=n)
+	{
+		take=price[idx]+fun(idx,n-rod_length,dp,price);
+	}
+	return dp[idx][n]=max(take,nottake);
+}
+
+int cutRod(vector<int>&price,int n)
+{
+	int s=price.size();
+	vector<vector<int>>dp(s,vector<int>(n+1,-1));
+	return fun(s-1,n,dp,price);
+}
+
+
+
+//TABULATION
+int cutRod(vector<int>&price,int n)
+{
+	int s=price.size();
+	vector<vector<int>>dp(s,vector<int>(n+1,0));
+
+	for(int i=0;i<=n;i++)
+	dp[0][i]=price[0]*i;
+
+	for(int idx=1;idx<s;idx++)
+	{
+		for(int N=0;N<=n;N++)
+		{
+			int nottake=0+dp[idx-1][N];
+			int take=INT_MIN;
+			int rod_length=idx+1;
+			if(rod_length<=N)
+			{
+				take=price[idx]+dp[idx][N-rod_length];
+			}
+			dp[idx][N]=max(nottake,take);
+		}
+	}
+	return dp[s-1][n];
+}
+
+
+//SPACE OPTIMIZATION
+int cutRod(vector<int>&price,int n)
+{
+	int s=price.size();
+	vector<int>prev(n+1,0);
+
+	for(int i=0;i<=n;i++)
+	prev[i]=price[0]*i;
+
+	for(int idx=1;idx<s;idx++)
+	{
+		vector<int>curr(n+1,0);
+		for(int N=0;N<=n;N++)
+		{
+			int nottake=0+prev[N];
+			int take=INT_MIN;
+			int rod_length=idx+1;
+			if(rod_length<=N)
+			{
+				take=price[idx]+curr[N-rod_length];
+			}
+			curr[N]=max(nottake,take);
+		}
+		prev=curr;
+	}
+	return prev[n];
+}
