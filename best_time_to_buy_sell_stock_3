@@ -1,0 +1,55 @@
+class Solution {
+public:
+    /*int fun(int idx,vector<int>&prices,int buy,int k,vector<vector<vector<int>>>&dp)
+    {   
+        if(k==0)
+        return 0;
+        if(idx>=prices.size())
+        return 0;
+        if(dp[idx][buy][k]!=-1)
+        return dp[idx][buy][k];
+        if(buy)
+        {
+            return dp[idx][buy][k]=max(-prices[idx]+fun(idx+1,prices,0,k,dp) , 
+                                        0+fun(idx+1,prices,1,k,dp));
+        }
+        else
+        {
+            return dp[idx][buy][k]=max(prices[idx]+fun(idx+1,prices,1,k-1,dp) , 
+                                        0+fun(idx+1,prices,0,k,dp));
+        }
+    }
+    int maxProfit(vector<int>& prices) 
+    {
+        int n=prices.size();
+        vector<vector<vector<int>>>dp(n,vector<vector<int>>(2,vector<int>(3,-1)));
+        return fun(0,prices,1,2,dp);    
+    }*/
+
+
+    int maxProfit(vector<int>&prices)
+    {
+        int n=prices.size();
+        vector<vector<vector<int>>>dp(n+1,vector<vector<int>>(2,vector<int>(3,0)));
+
+
+        for(int idx=n-1;idx>=0;idx--)
+        {
+            for(int buy=0;buy<=1;buy++)
+            {
+                for(int k=1;k<=2;k++)
+                {
+                    if(buy)
+                    {
+                        dp[idx][buy][k]=max(-prices[idx]+dp[idx+1][0][k] , 0+dp[idx+1][1][k]);
+                    }
+                    else
+                    {
+                        dp[idx][buy][k]=max(prices[idx]+dp[idx+1][1][k-1] ,0+dp[idx+1][0][k]);
+                    }
+                }
+            }
+        }
+        return dp[0][1][2];
+    }
+};
